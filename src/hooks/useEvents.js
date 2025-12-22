@@ -4,61 +4,100 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import {
     collection,
-    onSnapshot,
     addDoc,
     updateDoc,
     deleteDoc,
     doc,
+    onSnapshot,
     query,
-    orderBy
+    orderBy,
+    where
 } from "firebase/firestore";
+import { TEMPLATE_EVENTS } from "@/lib/constants";
 
-export function useEvents() {
+export function useEvents(user) {
     const [events, setEvents] = useState([]);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const q = query(collection(db, "events"), orderBy("date", "asc"));
+        if (!user) {
+            // Sort template events: Oldest (Left) -> Newest (Right)
+            const sortedTemplates = [...TEMPLATE_EVENTS].sort((a, b) => new Date(a.date) - new Date(b.date));
+            setEvents(sortedTemplates);
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        // Explicitly order by date asc for logged in users
+        const q = query(
+            collection(db, "events"),
+            where("userId", "==", user.uid),
+            orderBy("date", "asc")
+        );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const eventsData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
+            // Double ensure sort in client just in case
+            eventsData.sort((a, b) => new Date(a.date) - new Date(b.date));
             setEvents(eventsData);
-            setIsLoaded(true);
-        }, (error) => {
-            console.error("Error fetching events:", error);
-            setIsLoaded(true); // Still set loaded to avoid infinite loading state
+            setLoading(false);
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
-    const addEvent = async (event) => {
+    const addEvent = async (eventData) => {
+        if (!user) return;
+        // Validate date
+        if (!eventData.date || isNaN(new Date(eventData.date).getTime())) {
+            console.error("Attempted to save invalid date:", eventData);
+            alert("Please select a valid date.");
+            return;
+        }
+
         try {
-            // Remove id if it exists (it might be undefined)
-            const { id, ...eventData } = event;
+            // Remove undefined fields
+            const cleanData = Object.fromEntries(
+                Object.entries(eventData).filter(([_, v]) => v !== undefined)
+            );
+
             await addDoc(collection(db, "events"), {
-                ...eventData,
+                ...cleanData,
+                userId: user.uid,
                 createdAt: new Date().toISOString()
             });
-        } catch (e) {
-            console.error("Error adding event: ", e);
+        } catch (error) {
+            console.error("Error adding event:", error);
         }
     };
 
-    const updateEvent = async (updatedEvent) => {
+    const updateEvent = async (eventData) => {
+        if (!user) return;
+        // Validate date
+        if (!eventData.date || isNaN(new Date(eventData.date).getTime())) {
+            console.error("Attempted to save invalid date:", eventData);
+            alert("Please select a valid date.");
+            return;
+        }
+
         try {
-            const eventRef = doc(db, "events", updatedEvent.id);
-            const { id, ...data } = updatedEvent;
-            await updateDoc(eventRef, data);
-        } catch (e) {
-            console.error("Error updating event: ", e);
+            const eventRef = doc(db, "events", eventData.id);
+            // Remove undefined fields
+            const cleanData = Object.fromEntries(
+                Object.entries(eventData).filter(([_, v]) => v !== undefined)
+            );
+            await updateDoc(eventRef, cleanData);
+        } catch (error) {
+            console.error("Error updating event:", error);
         }
     };
 
     const deleteEvent = async (id) => {
+        if (!user) return;
         try {
             await deleteDoc(doc(db, "events", id));
         } catch (e) {
@@ -66,5 +105,5 @@ export function useEvents() {
         }
     };
 
-    return { events, addEvent, updateEvent, deleteEvent, isLoaded };
+    return { events, addEvent, updateEvent, deleteEvent, loading };
 }

@@ -9,6 +9,26 @@ import { CountdownCard } from "@/components/CountdownCard";
 import { AnimatePresence } from "framer-motion";
 import { Loader2, AlertCircle } from "lucide-react";
 
+export async function generateMetadata({ params }) {
+    const slug = params.slug;
+
+    return {
+        title: `@${slug}'s Countdowns`,
+        description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+        openGraph: {
+            title: `@${slug}'s Countdowns`,
+            description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+            images: [`/api/og?title=${encodeURIComponent("Public Profile")}&slug=${encodeURIComponent(slug)}`],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `@${slug}'s Countdowns`,
+            description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+            images: [`/api/og?title=${encodeURIComponent("Public Profile")}&slug=${encodeURIComponent(slug)}`],
+        },
+    }
+}
+
 export default function PublicProfilePage() {
     const params = useParams();
     const slug = params.slug;

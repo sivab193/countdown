@@ -24,6 +24,9 @@ export default function Home() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [filterCategory, setFilterCategory] = useState("All");
+
+  const CATEGORIES = ["All", "Birthdays", "Movies", "Work", "Vacations", "Anniversaries", "Other"];
 
   useEffect(() => {
     if (!auth) {
@@ -103,33 +106,52 @@ export default function Home() {
       </div>
 
       <main className="max-w-7xl mx-auto pt-12 px-4 sm:px-8">
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <h1 className="text-4xl sm:text-5xl font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-transparent">
-            Sivaganesh Countdowns
+            Countdowns
           </h1>
 
           {/* Only show Add button if logged in */}
           {user && (
             <button
               onClick={handleAddEvent}
-              className="p-3 rounded-full bg-foreground text-background hover:scale-110 transition-transform shadow-lg"
+              className="p-3 rounded-full bg-foreground text-background hover:scale-110 transition-transform shadow-lg shrink-0"
             >
               <Plus className="w-6 h-6" />
             </button>
           )}
         </div>
 
+        {events.length > 0 && (
+          <div className="flex overflow-x-auto pb-4 mb-8 gap-2 no-scrollbar">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filterCategory === cat
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-foreground/5 text-foreground hover:bg-foreground/10"
+                  }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+
         <Grid>
           <AnimatePresence mode="popLayout">
-            {events.map((event) => (
-              <CountdownCard
-                key={event.id}
-                event={event}
-                onDelete={deleteEvent}
-                onEdit={handleEditEvent}
-                isAdmin={!!user} // Only allow edits if logged in
-              />
-            ))}
+            {events
+              .filter(e => filterCategory === "All" || (e.category || "Other") === filterCategory)
+              .map((event) => (
+                <CountdownCard
+                  key={event.id}
+                  event={event}
+                  onDelete={deleteEvent}
+                  onEdit={handleEditEvent}
+                  isAdmin={!!user} // Only allow edits if logged in
+                />
+              ))}
           </AnimatePresence>
         </Grid>
       </main>

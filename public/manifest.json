@@ -1,0 +1,17 @@
+{
+    "name": "Sivaganesh Countdowns",
+    "short_name": "Countdowns",
+    "description": "Track your important events in any timezone with precision.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/icon.svg",
+            "sizes": "192x192 512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

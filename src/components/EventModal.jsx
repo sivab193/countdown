@@ -13,6 +13,9 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
     const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [displayFormat, setDisplayFormat] = useState("default");
     const [isPublic, setIsPublic] = useState(false);
+    const [category, setCategory] = useState("Other");
+
+    const CATEGORIES = ["Other", "Birthdays", "Movies", "Work", "Vacations", "Anniversaries"];
 
     useEffect(() => {
         if (event) {
@@ -21,12 +24,14 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
             setTimezone(event.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
             setDisplayFormat(event.displayFormat || "default");
             setIsPublic(event.isPublic || false);
+            setCategory(event.category || "Other");
         } else {
             setTitle("");
             setDate("");
             setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
             setDisplayFormat("default");
             setIsPublic(false);
+            setCategory("Other");
         }
     }, [event, isOpen]);
 
@@ -39,6 +44,7 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
             timezone,
             displayFormat,
             isPublic,
+            category,
         });
         onClose();
     };
@@ -88,6 +94,18 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                         <option value="weeks">Weeks (Wks/Days/Hrs/Min/Sec)</option>
                         <option value="months">Months (Mths/Days/Hrs/Min/Sec)</option>
                         <option value="days_only">Total Days Only</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full p-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary outline-none"
+                    >
+                        {CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </select>
                 </div>
                 <div className="flex items-center gap-2">

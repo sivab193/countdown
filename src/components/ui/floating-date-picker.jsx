@@ -231,16 +231,27 @@ export function FloatingDatePicker({ value, onChange }) {
         if (value) {
             const d = new Date(value);
             if (!isNaN(d.getTime())) {
-                const iso = d.toISOString();
-                setSelectedDateStr(iso.split('T')[0]);
+                const [datePart, timePart] = value.split('T');
+                if (datePart && timePart) {
+                    setSelectedDateStr(datePart);
+                    setTime(timePart);
+                    const [y, m, d] = datePart.split('-').map(Number);
+                    const localD = new Date(y, m - 1, d);
+                    const displayVal = localD.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    setInputValue(displayVal);
+                } else {
+                    const iso = d.toISOString();
+                    setSelectedDateStr(iso.split('T')[0]);
 
-                const h = d.getHours().toString().padStart(2, '0');
-                const m = d.getMinutes().toString().padStart(2, '0');
-                setTime(`${h}:${m}`);
+                    const h = d.getHours().toString().padStart(2, '0');
+                    const m = d.getMinutes().toString().padStart(2, '0');
+                    setTime(`${h}:${m}`);
 
-                // Sync input value for consistency
-                const displayVal = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                setInputValue(displayVal);
+                    // Sync input value for consistency
+                    const displayVal = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    setInputValue(displayVal);
+                }
+
             }
         } else {
             // If value cleared?

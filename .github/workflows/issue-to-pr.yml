@@ -1,0 +1,118 @@
+name: Auto Create PR for Bugs
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'bug')
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Ask Gemini 1.5 Flash for Bug Fix
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          # Create a Node.js script to call the Gemini API
+          cat << 'EOF' > generate_fix.js
+          const fs = require('fs');
+          const path = require('path');
+
+          // Helper to recursively read all files in the src directory
+          function readRepoContext(dir, fileList = []) {
+            if (!fs.existsSync(dir)) return fileList;
+            const files = fs.readdirSync(dir);
+            for (const file of files) {
+              const filePath = path.join(dir, file);
+              if (fs.statSync(filePath).isDirectory()) {
+                readRepoContext(filePath, fileList);
+              } else if (file.endsWith('.js') || file.endsWith('.jsx') || file.endsWith('.css')) {
+                fileList.push({
+                  path: filePath,
+                  content: fs.readFileSync(filePath, 'utf-8')
+                });
+              }
+            }
+            return fileList;
+          }
+
+          async function run() {
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+              console.log("No GEMINI_API_KEY provided. Creating a placeholder PR.");
+              fs.writeFileSync('PROPOSED_FIX.md', `# Issue #${process.env.ISSUE_TITLE}\n\nAdd GEMINI_API_KEY to your GitHub repository secrets to enable AI auto-fixes.`);
+              return;
+            }
+
+            console.log("Gathering repository context...");
+            const files = readRepoContext('src');
+            let repoContextText = "Here is the codebase context:\n\n";
+            for (const f of files) {
+              repoContextText += `--- FILE: ${f.path} ---\n${f.content}\n\n`;
+            }
+
+            const prompt = `You are an expert AI software engineer. 
+A bug was reported in my Next.js React application.
+Issue Title: ${process.env.ISSUE_TITLE}
+Issue Description: ${process.env.ISSUE_BODY}
+
+${repoContextText}
+
+Please analyze the bug and provide a fix. Detail your explanation first, and then provide the exact code changes needed. You can provide the fully updated code for the files that need to be changed so the developer can easily copy-paste or review them.`;
+
+            console.log("Calling Gemini 1.5 Flash API...");
+            try {
+              const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+              const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: prompt }] }],
+                  generationConfig: {
+                    temperature: 0.2, // Low temperature for coding precision
+                  }
+                })
+              });
+              
+              if (!response.ok) {
+                throw new Error(`API responded with status ${response.status}`);
+              }
+              
+              const data = await response.json();
+              const fix = data.candidates[0].content.parts[0].text;
+              
+              fs.writeFileSync('PROPOSED_FIX.md', `# AI Proposed Fix\n\n${fix}`);
+              console.log("Successfully generated PROPOSED_FIX.md");
+            } catch (err) {
+              console.error("Error calling Gemini API:", err);
+              fs.writeFileSync('PROPOSED_FIX.md', `# Error\n\nFailed to generate fix: ${err.message}`);
+            }
+          }
+
+          run();
+          EOF
+          
+          node generate_fix.js
+          rm generate_fix.js
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Auto PR: Gemini proposed fix for issue #${{ github.event.issue.number }}"
+          title: "Auto PR: fix for issue #${{ github.event.issue.number }}"
+          body: |
+            Fixes #${{ github.event.issue.number }}
+            Link to issue: ${{ github.event.issue.html_url }}
+            
+            🤖 ✨ **Gemini 1.5 Flash** has analyzed this bug and generated a proposed fix. 
+            Please review the `PROPOSED_FIX.md` file included in this Pull Request to see the suggested code changes!
+          branch: issue-${{ github.event.issue.number }}-auto-pr
+          base: main

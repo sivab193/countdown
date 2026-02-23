@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { format, toZonedTime } from "date-fns-tz";
+import { format, toZonedTime, fromZonedTime } from "date-fns-tz";
 import { cn } from "@/lib/utils";
 import { FlipNumber } from "./FlipNumber";
 
@@ -26,8 +26,9 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                     return;
                 }
 
-                const eventDate = toZonedTime(event.date, timeZone);
-                if (isNaN(eventDate.getTime())) {
+                // Find the absolute moment in UTC when it is `event.date` in `timeZone`
+                const absoluteEventDate = fromZonedTime(event.date, timeZone);
+                if (isNaN(absoluteEventDate.getTime())) {
                     setInvalidData(true);
                     return;
                 }
@@ -35,17 +36,22 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                 // If valid, clear invalid state
                 setInvalidData(false);
 
-                const isPast = now > eventDate;
+                const isPast = now > absoluteEventDate;
                 setIsEventPast(isPast);
 
-                const start = isPast ? eventDate : now;
-                const end = isPast ? now : eventDate;
+                // calculate duration taking the target timezone into account for things like Months and Days
+                const start = isPast ? absoluteEventDate : now;
+                const end = isPast ? now : absoluteEventDate;
 
-                // Basic duration for Months/Years
-                const duration = intervalToDuration({ start, end });
+                // Shift both absolute UTC times into the target timezone context to do exact calendar math
+                const startZoned = toZonedTime(start, timeZone);
+                const endZoned = toZonedTime(end, timeZone);
+
+                // Basic duration for Months/Years using the timezone-aligned dates
+                const duration = intervalToDuration({ start: startZoned, end: endZoned });
 
                 // Total difference for manual calcs
-                const diff = Math.abs(eventDate - now);
+                const diff = Math.abs(absoluteEventDate - now);
                 const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24)) || 0;
 
                 let computedTime = {};
@@ -167,9 +173,16 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="space-y-4">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground/90 line-clamp-2">
-                            {event.title}
-                        </h3>
+                        <div className="flex flex-col gap-1">
+                            {event.category && event.category !== "Other" && (
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground bg-foreground/5 px-2 py-0.5 rounded-full w-fit">
+                                    {event.category}
+                                </span>
+                            )}
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground/90 line-clamp-2">
+                                {event.title}
+                            </h3>
+                        </div>
                         {/* Status Badge */}
                         <span className={cn(
                             "shrink-0 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider w-6 h-6 flex items-center justify-center",

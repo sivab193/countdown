@@ -19,7 +19,7 @@ const features = [
     {
         icon: <Share2 className="w-5 h-5 text-emerald-500" />,
         title: "Public Profiles",
-        description: "Claim a unique /u/username link to share your public events dynamically over social media."
+        description: "Claim a unique /username link to share your public events dynamically over social media."
     },
     {
         icon: <Tags className="w-5 h-5 text-emerald-500" />,
@@ -35,7 +35,7 @@ const features = [
 
 export function Features() {
     return (
-        <section className="w-full bg-zinc-950/80 sm:rounded-3xl border-y sm:border border-white/5 py-4 lg:py-6 px-4 md:px-12 lg:px-8 mx-[-1rem] sm:mx-0 w-[calc(100%+2rem)] sm:w-full max-w-none shrink-0">
+        <section className="hidden sm:block w-full bg-zinc-950/80 sm:rounded-3xl border-y sm:border border-white/5 py-4 lg:py-6 px-4 md:px-12 lg:px-8 mx-[-1rem] sm:mx-0 w-[calc(100%+2rem)] sm:w-full max-w-none shrink-0">
             <div className="max-w-5xl mx-auto">
                 <div className="flex flex-col gap-3 sm:gap-4 pb-2 pt-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-6 sm:pb-0 sm:pt-0">
                     {features.map((feature, idx) => (

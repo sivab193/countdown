@@ -155,7 +155,7 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
                 "relative overflow-hidden rounded-3xl p-4 sm:p-5 lg:p-4 backdrop-blur-xl border border-white/10 shadow-2xl",
-                "h-auto sm:h-[280px] lg:h-[230px] w-full max-w-full flex flex-col justify-between gap-4",
+                "min-h-[180px] h-auto sm:aspect-square w-full max-w-[95vw] sm:max-w-[260px] lg:max-w-none mx-auto flex flex-col justify-between gap-6 sm:gap-8",
                 isEventPast
                     ? "bg-amber-950/20 hover:bg-amber-900/20 border-amber-500/20"
                     : "bg-emerald-950/20 hover:bg-emerald-900/20 border-emerald-500/20",
@@ -173,7 +173,7 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
             />
 
             <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="space-y-4">
+                <div className="flex flex-col gap-1 sm:gap-2">
                     <div className="flex items-start justify-between gap-2 min-h-[52px]">
                         <div className="flex flex-col gap-1 w-full pr-2">
                             {event.category && event.category !== "Other" ? (
@@ -198,7 +198,7 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                         </span>
                     </div>
 
-                    <div className="text-sm text-emerald-100/70 font-medium flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="text-[13px] sm:text-sm text-emerald-100/70 font-medium flex flex-wrap items-center gap-x-2 gap-y-1 pb-1 sm:pb-2">
                         <ClientDate date={event.date} />
                         <span className="text-emerald-100/40">•</span>
                         <ClientTime date={event.date} timezone={event.timezone} />

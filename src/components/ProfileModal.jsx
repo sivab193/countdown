@@ -81,7 +81,7 @@ export function ProfileModal({ isOpen, onClose, user }) {
         }
     };
 
-    const publicUrl = existingSlug ? `${window.location.origin}/u/${existingSlug}` : "";
+    const publicUrl = existingSlug ? `${window.location.origin}/${existingSlug}` : "";
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(publicUrl);
@@ -134,7 +134,7 @@ export function ProfileModal({ isOpen, onClose, user }) {
                             <label className="block text-sm font-medium mb-1.5 text-foreground">Custom URL</label>
                             <div className="flex items-center">
                                 <span className="bg-white/5 px-3 py-2.5 border border-white/10 border-r-0 rounded-l-xl text-emerald-500 text-sm font-mono">
-                                    /u/
+                                    /
                                 </span>
                                 <input
                                     type="text"

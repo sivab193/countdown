@@ -57,20 +57,28 @@ export function Stats() {
     if (isOffline) return null;
     const avgEvents = users > 0 ? (publicEvents / users).toFixed(1) : "0";
 
+    const formatNumber = (num) => {
+        if (num === null || typeof num === "undefined") return null;
+        return Intl.NumberFormat("en-US", {
+            notation: "compact",
+            maximumFractionDigits: 1
+        }).format(num);
+    };
+
     const stats = [
         {
             label: "Registered Users",
-            value: loading ? null : users.toLocaleString(),
+            value: loading ? null : formatNumber(users),
             icon: <Users className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {
             label: "Public Events Shared",
-            value: loading ? null : publicEvents.toLocaleString(),
+            value: loading ? null : formatNumber(publicEvents),
             icon: <Globe2 className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {
             label: "Total Site Visits",
-            value: loading ? null : visits.toLocaleString(),
+            value: loading ? null : formatNumber(visits),
             icon: <Eye className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {

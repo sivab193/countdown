@@ -97,7 +97,7 @@ export function PublicProfileClient({ slug }) {
     return (
         <div className={cn(
             "font-[family-name:var(--font-geist-sans)] relative w-full overflow-x-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black",
-            "h-[100dvh] overflow-hidden flex flex-col"
+            "min-h-[100dvh] flex flex-col"
         )}>
             {/* Solid Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-white/5 shrink-0">
@@ -116,17 +116,17 @@ export function PublicProfileClient({ slug }) {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-[68px] sm:pt-20 pb-[76px] sm:pb-20 flex flex-col flex-1 min-h-0">
+            <main className="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-[64px] sm:pt-24 pb-[76px] sm:pb-20 flex flex-col flex-1 min-h-0">
                 {/* Profile Title */}
-                <div className="mb-6 pt-4">
-                    <h2 className="text-3xl sm:text-4xl font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-transparent">
+                <div className="mb-4 sm:mb-8">
+                    <h6 className="text-xl sm:text-2xl font-bold tracking-tight text-emerald-400">
                         @{slug}&apos;s Countdowns
-                    </h2>
+                    </h6>
                 </div>
 
                 {/* Dynamic Category Filters */}
                 {events.length > 0 && activeCategories.length > 1 && (
-                    <div className="flex overflow-x-auto pb-3 mb-4 gap-2 no-scrollbar">
+                    <div className="flex overflow-x-auto pb-3 mb-4 sm:mb-8 gap-2 no-scrollbar">
                         {activeCategories.map(cat => (
                             <button
                                 key={cat}
@@ -145,8 +145,8 @@ export function PublicProfileClient({ slug }) {
                         <p className="text-zinc-500 text-lg font-medium">No public countdowns yet.</p>
                     </div>
                 ) : (
-                    <div className="flex flex-col justify-start flex-1 min-h-0 w-full overflow-hidden relative">
-                        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 w-full pb-4 md:pb-0 sm:overflow-visible">
+                    <div className="flex flex-col justify-start flex-1 min-h-0 w-full relative">
+                        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 w-full pb-4 md:pb-0 sm:overflow-visible">
                             <AnimatePresence mode="popLayout">
                                 {filteredEvents.map((event) => (
                                     <div key={event.id} className="w-full md:w-auto shrink-0">
@@ -162,7 +162,7 @@ export function PublicProfileClient({ slug }) {
                 )}
 
                 {/* Stats Section */}
-                <section className="w-full shrink-0 flex flex-col items-center justify-center relative">
+                <section className="sm:mt-auto w-full flex flex-col items-center justify-center relative sm:pt-8">
                     <Stats />
                 </section>
             </main>

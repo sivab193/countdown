@@ -126,7 +126,7 @@ export default function Home() {
           </div>
         </div>
         <p className="text-xs text-muted-foreground/80 max-w-md mx-auto pt-4 border-t border-border/50">
-          Tip: Click "My Profile" to claim your unique link (e.g., /u/yourname) and share your public countdowns with the world!
+          Tip: Click "My Profile" to claim your unique link (e.g., /yourname) and share your public countdowns with the world!
         </p>
       </div>
 
@@ -134,11 +134,11 @@ export default function Home() {
   );
 
   const LandingContent = (
-    <div className="flex flex-col justify-between h-full w-full pt-2 lg:pt-4 pb-[76px] sm:pb-20 gap-2 sm:gap-4 lg:gap-8 overflow-hidden">
+    <div className="flex flex-col h-full w-full pt-2 lg:pt-4 pb-[76px] sm:pb-8 gap-4 sm:gap-8 overflow-hidden">
       {/* Hero / Events Section */}
-      <section className="flex flex-col relative w-full flex-1 min-h-0">
+      <section className="flex flex-col relative w-full flex-1">
         {events.length > 0 && (
-          <div className="flex overflow-x-auto pb-3 mb-4 gap-2 no-scrollbar shrink-0">
+          <div className="flex overflow-x-auto pb-3 mb-4 sm:mb-8 gap-2 no-scrollbar shrink-0">
             {activeCategories.map(cat => (
               <button
                 key={cat}
@@ -151,8 +151,8 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex flex-col justify-start flex-1 min-h-0 w-full overflow-hidden relative">
-          <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 w-full pb-4 md:pb-0 sm:overflow-visible">
+        <div className="flex flex-col justify-start flex-1 min-h-0 w-full relative">
+          <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full md:pb-0 sm:overflow-visible">
             <AnimatePresence mode="popLayout">
               {events
                 .filter(e => filterCategory === "All" || (e.category || "Other") === filterCategory)
@@ -166,15 +166,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="w-full shrink-0 flex flex-col items-center justify-center relative">
-        <Features />
-      </section>
+      {/* Bottom Features & Stats Wrapper */}
+      <div className="sm:mt-auto flex flex-col gap-4 w-full sm:pt-8">
+        {/* Features Section */}
+        <section className="w-full flex flex-col items-center justify-center relative">
+          <Features />
+        </section>
 
-      {/* Stats Section */}
-      <section className="w-full shrink-0 flex flex-col items-center justify-center relative">
-        <Stats />
-      </section>
+        {/* Stats Section */}
+        <section className="w-full flex flex-col items-center justify-center relative pb-4">
+          <Stats />
+        </section>
+      </div>
     </div>
   );
 
@@ -183,7 +186,7 @@ export default function Home() {
   return (
     <div ref={scrollRef} className={cn(
       "font-[family-name:var(--font-geist-sans)] relative w-full overflow-x-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black",
-      !showDashboard ? "h-[100dvh] overflow-hidden flex flex-col" : "min-h-[100dvh] pb-24"
+      !showDashboard ? "min-h-[100dvh] flex flex-col" : "min-h-[100dvh] pb-24"
     )}>
       {/* Solid Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-white/5">
@@ -225,7 +228,7 @@ export default function Home() {
       </header>
 
       <main className={cn(
-        "mx-auto w-full max-w-7xl px-4 sm:px-8 pt-[68px] sm:pt-20",
+        "mx-auto w-full max-w-7xl px-4 sm:px-8 pt-[64px] sm:pt-24",
         !showDashboard ? "flex flex-col flex-1 min-h-0" : "pb-12"
       )}>
         {showDashboard ? DashboardContent : LandingContent}

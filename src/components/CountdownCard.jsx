@@ -155,7 +155,7 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
                 "relative overflow-hidden rounded-3xl p-4 sm:p-5 lg:p-4 backdrop-blur-xl border border-white/10 shadow-2xl",
-                "h-[220px] sm:h-[280px] lg:h-[230px] w-full flex flex-col justify-between",
+                "h-auto sm:h-[280px] lg:h-[230px] w-full max-w-full flex flex-col justify-between gap-4",
                 isEventPast
                     ? "bg-amber-950/20 hover:bg-amber-900/20 border-amber-500/20"
                     : "bg-emerald-950/20 hover:bg-emerald-900/20 border-emerald-500/20",
@@ -183,7 +183,7 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                             ) : (
                                 <span className="h-[20px] w-full block"></span>
                             )}
-                            <h3 className="text-2xl font-black tracking-tighter text-white line-clamp-2 leading-tight drop-shadow-sm">
+                            <h3 className="text-lg sm:text-2xl font-black tracking-tighter text-white break-words whitespace-normal leading-tight drop-shadow-sm">
                                 {event.title}
                             </h3>
                         </div>

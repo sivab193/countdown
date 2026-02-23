@@ -77,7 +77,7 @@ export function LoginModal({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    const inputStyles = "w-full p-2.5 rounded-xl bg-zinc-100 bg-white/5 border border-zinc-200 border-white/10 text-[#111] dark:text-zinc-100 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/30 transition-all";
+    const inputStyles = "w-full p-2.5 rounded-xl bg-zinc-100 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/30 transition-all";
 
     return (
         <Modal

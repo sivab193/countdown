@@ -134,7 +134,7 @@ export default function Home() {
   );
 
   const LandingContent = (
-    <div className="flex flex-col justify-between h-full w-full pt-4 pb-20 gap-4 lg:gap-8 overflow-hidden">
+    <div className="flex flex-col justify-between h-full w-full pt-2 lg:pt-4 pb-[76px] sm:pb-20 gap-2 sm:gap-4 lg:gap-8 overflow-hidden">
       {/* Hero / Events Section */}
       <section className="flex flex-col relative w-full flex-1 min-h-0">
         {events.length > 0 && (
@@ -151,13 +151,13 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex flex-col justify-center flex-1 min-h-0 w-full">
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 w-full pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:overflow-visible no-scrollbar">
+        <div className="flex flex-col justify-start flex-1 min-h-0 w-full overflow-hidden relative">
+          <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 w-full pb-4 md:pb-0 sm:overflow-visible">
             <AnimatePresence mode="popLayout">
               {events
                 .filter(e => filterCategory === "All" || (e.category || "Other") === filterCategory)
                 .map((event) => (
-                  <div key={event.id} className="w-[85vw] sm:w-[60vw] md:w-auto shrink-0 snap-center">
+                  <div key={event.id} className="w-full md:w-auto shrink-0">
                     <CountdownCard event={event} onDelete={deleteEvent} onEdit={handleEditEvent} isAdmin={false} />
                   </div>
                 ))}
@@ -182,7 +182,7 @@ export default function Home() {
 
   return (
     <div ref={scrollRef} className={cn(
-      "font-[family-name:var(--font-geist-sans)] relative w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black",
+      "font-[family-name:var(--font-geist-sans)] relative w-full overflow-x-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black",
       !showDashboard ? "h-[100dvh] overflow-hidden flex flex-col" : "min-h-[100dvh] pb-24"
     )}>
       {/* Solid Header */}
@@ -225,7 +225,7 @@ export default function Home() {
       </header>
 
       <main className={cn(
-        "mx-auto w-full max-w-7xl px-4 sm:px-8 pt-20",
+        "mx-auto w-full max-w-7xl px-4 sm:px-8 pt-[68px] sm:pt-20",
         !showDashboard ? "flex flex-col flex-1 min-h-0" : "pb-12"
       )}>
         {showDashboard ? DashboardContent : LandingContent}

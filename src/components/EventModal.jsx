@@ -7,6 +7,9 @@ import { COMMON_TIMEZONES } from "@/lib/constants";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { FloatingDatePicker } from "@/components/ui/floating-date-picker";
 
+const inputStyles = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/30 transition-all";
+const selectStyles = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/30 transition-all appearance-none cursor-pointer";
+
 export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
     const [title, setTitle] = useState("");
     const [date, setDate] = useState("");
@@ -57,12 +60,13 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium mb-1">Title</label>
+                    <label className="block text-sm font-medium mb-1.5 text-foreground">Title</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full p-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary outline-none"
+                        className={inputStyles}
+                        placeholder="Event name"
                         required
                     />
                 </div>
@@ -70,11 +74,11 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                     <FloatingDatePicker value={date} onChange={setDate} />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1">Timezone</label>
+                    <label className="block text-sm font-medium mb-1.5 text-foreground">Timezone</label>
                     <select
                         value={timezone}
                         onChange={(e) => setTimezone(e.target.value)}
-                        className="w-full p-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary outline-none"
+                        className={selectStyles}
                     >
                         {COMMON_TIMEZONES.map((tz) => (
                             <option key={tz.value} value={tz.value}>
@@ -84,11 +88,11 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1">Display Format</label>
+                    <label className="block text-sm font-medium mb-1.5 text-foreground">Display Format</label>
                     <select
                         value={displayFormat}
                         onChange={(e) => setDisplayFormat(e.target.value)}
-                        className="w-full p-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary outline-none"
+                        className={selectStyles}
                     >
                         <option value="default">Default (Days/Hrs/Min/Sec)</option>
                         <option value="weeks">Weeks (Wks/Days/Hrs/Min/Sec)</option>
@@ -97,26 +101,26 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <label className="block text-sm font-medium mb-1.5 text-foreground">Category</label>
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full p-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary outline-none"
+                        className={selectStyles}
                     >
                         {CATEGORIES.map((cat) => (
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 py-1">
                     <input
                         type="checkbox"
                         id="isPublic"
                         checked={isPublic}
                         onChange={(e) => setIsPublic(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 accent-emerald-500"
                     />
-                    <label htmlFor="isPublic" className="text-sm font-medium">
+                    <label htmlFor="isPublic" className="text-sm font-medium text-foreground">
                         Public Event (Visible on your public profile)
                     </label>
                 </div>
@@ -128,7 +132,7 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                                 onDelete(event.id);
                                 onClose();
                             }}
-                            className="text-destructive hover:bg-destructive/10 p-2 rounded-lg transition-colors"
+                            className="text-red-400 hover:bg-red-500/10 p-2.5 rounded-xl transition-colors"
                         >
                             <Trash2 className="w-5 h-5" />
                         </button>
@@ -137,7 +141,7 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                     )}
                     <button
                         type="submit"
-                        className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+                        className="bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20"
                     >
                         Save
                     </button>
@@ -146,4 +150,3 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
         </Modal>
     );
 }
-

@@ -8,42 +8,49 @@ import {
     updateDoc,
     deleteDoc,
     doc,
+    getDoc,
     onSnapshot,
     query,
     orderBy,
-    where
+    where,
+    increment
 } from "firebase/firestore";
-import { TEMPLATE_EVENTS } from "@/lib/constants";
+
+const countersRef = doc(db, "stats", "counters");
 
 export function useEvents(user) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let q;
         if (!user) {
-            // Sort template events: Oldest (Left) -> Newest (Right)
-            const sortedTemplates = [...TEMPLATE_EVENTS].sort((a, b) => new Date(a.date) - new Date(b.date));
-            setEvents(sortedTemplates);
-            setLoading(false);
-            return;
+            // Unauthenticated users: fetch homepage-designated public events
+            q = query(
+                collection(db, "events"),
+                where("userId", "==", "homepage"),
+                where("isPublic", "==", true),
+                orderBy("date", "asc")
+            );
+        } else {
+            // Authenticated users fetching their own dashboard events
+            q = query(
+                collection(db, "events"),
+                where("userId", "==", user.uid),
+                orderBy("date", "asc")
+            );
         }
-
-        setLoading(true);
-        // Explicitly order by date asc for logged in users
-        const q = query(
-            collection(db, "events"),
-            where("userId", "==", user.uid),
-            orderBy("date", "asc")
-        );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const eventsData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
-            // Double ensure sort in client just in case
             eventsData.sort((a, b) => new Date(a.date) - new Date(b.date));
             setEvents(eventsData);
+            setLoading(false);
+        }, (error) => {
+            console.error("Firestore error in useEvents:", error);
             setLoading(false);
         });
 
@@ -52,7 +59,6 @@ export function useEvents(user) {
 
     const addEvent = async (eventData) => {
         if (!user) return;
-        // Validate date
         if (!eventData.date || isNaN(new Date(eventData.date).getTime())) {
             console.error("Attempted to save invalid date:", eventData);
             alert("Please select a valid date.");
@@ -60,7 +66,6 @@ export function useEvents(user) {
         }
 
         try {
-            // Remove undefined fields
             const cleanData = Object.fromEntries(
                 Object.entries(eventData).filter(([_, v]) => v !== undefined)
             );
@@ -70,6 +75,11 @@ export function useEvents(user) {
                 userId: user.uid,
                 createdAt: new Date().toISOString()
             });
+
+            // Update public events counter if the new event is public
+            if (eventData.isPublic) {
+                await updateDoc(countersRef, { publicEvents: increment(1) }).catch(() => { });
+            }
         } catch (error) {
             console.error("Error adding event:", error);
         }
@@ -77,7 +87,6 @@ export function useEvents(user) {
 
     const updateEvent = async (eventData) => {
         if (!user) return;
-        // Validate date
         if (!eventData.date || isNaN(new Date(eventData.date).getTime())) {
             console.error("Attempted to save invalid date:", eventData);
             alert("Please select a valid date.");
@@ -86,11 +95,23 @@ export function useEvents(user) {
 
         try {
             const eventRef = doc(db, "events", eventData.id);
-            // Remove undefined fields
+
+            // Check if isPublic toggled
+            const oldSnap = await getDoc(eventRef);
+            const wasPublic = oldSnap.exists() ? oldSnap.data().isPublic : false;
+            const isNowPublic = eventData.isPublic || false;
+
             const cleanData = Object.fromEntries(
                 Object.entries(eventData).filter(([_, v]) => v !== undefined)
             );
             await updateDoc(eventRef, cleanData);
+
+            // Adjust public events counter on toggle
+            if (!wasPublic && isNowPublic) {
+                await updateDoc(countersRef, { publicEvents: increment(1) }).catch(() => { });
+            } else if (wasPublic && !isNowPublic) {
+                await updateDoc(countersRef, { publicEvents: increment(-1) }).catch(() => { });
+            }
         } catch (error) {
             console.error("Error updating event:", error);
         }
@@ -99,7 +120,17 @@ export function useEvents(user) {
     const deleteEvent = async (id) => {
         if (!user) return;
         try {
-            await deleteDoc(doc(db, "events", id));
+            // Check if the event being deleted was public
+            const eventRef = doc(db, "events", id);
+            const snap = await getDoc(eventRef);
+            const wasPublic = snap.exists() ? snap.data().isPublic : false;
+
+            await deleteDoc(eventRef);
+
+            // Decrement public events counter if it was public
+            if (wasPublic) {
+                await updateDoc(countersRef, { publicEvents: increment(-1) }).catch(() => { });
+            }
         } catch (e) {
             console.error("Error deleting event: ", e);
         }

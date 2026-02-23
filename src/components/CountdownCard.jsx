@@ -152,52 +152,56 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            whileHover={{ scale: 1.02, y: -5 }}
             className={cn(
-                "relative overflow-hidden rounded-xl p-6 shadow-lg backdrop-blur-md border aspect-square flex flex-col",
+                "relative overflow-hidden rounded-xl p-6 backdrop-blur-md border aspect-square flex flex-col",
                 isEventPast
                     ? "bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10"
-                    : "bg-emerald-500/5 border-emerald-500/20 hover:bg-emerald-500/10",
-                "transition-all duration-300 group cursor-pointer"
+                    : "bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20",
+                "transition-all duration-300 group cursor-pointer",
+                "hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
             )}
             onClick={() => isAdmin && onEdit && onEdit(event)}
         >
             {/* Background Gradient Blob */}
             <div
                 className={cn(
-                    "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500",
+                    "absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-10 transition-colors duration-500",
                     isEventPast ? "bg-amber-500" : "bg-emerald-500"
                 )}
             />
 
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="flex flex-col gap-1">
-                            {event.category && event.category !== "Other" && (
-                                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground bg-foreground/5 px-2 py-0.5 rounded-full w-fit">
+                    <div className="flex items-start justify-between gap-2 min-h-[52px]">
+                        <div className="flex flex-col gap-1 w-full pr-2">
+                            {event.category && event.category !== "Other" ? (
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full w-fit">
                                     {event.category}
                                 </span>
+                            ) : (
+                                <span className="h-[20px] w-full block"></span>
                             )}
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground/90 line-clamp-2">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white/90 line-clamp-2 leading-tight">
                                 {event.title}
                             </h3>
                         </div>
-                        {/* Status Badge */}
+                        {/* Status Badge — Pill shaped */}
                         <span className={cn(
-                            "shrink-0 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider w-6 h-6 flex items-center justify-center",
-                            isEventPast ? "bg-amber-500/20 text-amber-500" : "bg-emerald-500/20 text-emerald-500"
+                            "shrink-0 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border whitespace-nowrap",
+                            isEventPast
+                                ? "bg-amber-500/20 text-amber-500 border-amber-500/30"
+                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                         )}>
-                            {isEventPast ? "P" : "F"}
+                            {isEventPast ? "Past" : "Upcoming"}
                         </span>
                     </div>
 
-                    <div className="text-sm text-muted-foreground font-medium flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="text-sm text-zinc-400 font-medium flex flex-wrap items-center gap-x-2 gap-y-1">
                         <ClientDate date={event.date} />
-                        <span className="hidden sm:inline text-muted-foreground/30">•</span>
+                        <span className="text-zinc-600">•</span>
                         <ClientTime date={event.date} timezone={event.timezone} />
                         {event.timezone && (
-                            <span className="text-[10px] uppercase font-bold tracking-wider bg-foreground/5 px-1.5 py-0.5 rounded text-muted-foreground/70">
+                            <span className="text-[10px] uppercase font-bold tracking-wider bg-white/5 px-1.5 py-0.5 rounded text-zinc-500">
                                 <ClientTimezone date={new Date()} timezone={event.timezone} />
                             </span>
                         )}
@@ -205,24 +209,24 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                 </div>
 
                 <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-3 text-center w-full">
-                    {format === "months" && <TimeUnit value={timeLeft.months} label="Mths" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />}
-                    {format === "weeks" && <TimeUnit value={timeLeft.weeks} label="Wks" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />}
+                    {format === "months" && <TimeUnit value={timeLeft.months} label="Mths" isEventPast={isEventPast} />}
+                    {format === "weeks" && <TimeUnit value={timeLeft.weeks} label="Wks" isEventPast={isEventPast} />}
 
-                    <TimeUnit value={timeLeft.days} label="Days" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />
+                    <TimeUnit value={timeLeft.days} label="Days" isEventPast={isEventPast} />
 
                     {format !== "days_only" && (
                         <>
-                            <TimeUnit value={timeLeft.hours} label="Hrs" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />
-                            <TimeUnit value={timeLeft.minutes} label="Min" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />
-                            <TimeUnit value={timeLeft.seconds} label="Sec" color={isEventPast ? "text-amber-500" : "text-emerald-500"} />
+                            <TimeUnit value={timeLeft.hours} label="Hrs" isEventPast={isEventPast} />
+                            <TimeUnit value={timeLeft.minutes} label="Min" isEventPast={isEventPast} />
+                            <TimeUnit value={timeLeft.seconds} label="Sec" isEventPast={isEventPast} />
                         </>
                     )}
                 </div>
             </div>
 
             {isAdmin && (
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                    <span className="text-white font-medium px-4 py-2 rounded-full border border-white/20 bg-white/10">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm rounded-xl">
+                    <span className="text-white font-medium px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/10">
                         Edit Event
                     </span>
                 </div>
@@ -231,36 +235,33 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
     );
 }
 
-function TimeUnit({ value, label, color }) {
+function TimeUnit({ value, label, isEventPast }) {
     const digits = value.toString().length;
 
-    // Dynamic sizing helper
-    // For square card layout, we need to be careful with width to fit 4-5 items
-    // We'll use flex-1 to distribute space evenly or min-width
-
     let sizeClass = "text-xl sm:text-2xl";
-    let widthClass = "min-w-[55px] sm:min-w-[65px]";
+    let widthClass = "px-1 sm:px-2 min-w-0 flex-1";
 
-    if (digits > 4) {
+    if (digits >= 4) {
+        sizeClass = "text-base sm:text-lg";
+    } else if (digits === 3) {
         sizeClass = "text-lg sm:text-xl";
-        widthClass = "min-w-[70px] px-1";
-    } else if (digits > 2) {
-        widthClass = "min-w-[65px] sm:min-w-[75px] px-1";
     }
+
+    const color = isEventPast ? "text-amber-500" : "text-emerald-400";
 
     return (
         <div className={cn(
-            "flex flex-col items-center justify-center p-2 rounded-lg bg-foreground/5 backdrop-blur-sm overflow-hidden transition-all duration-300 flex-1",
+            "flex flex-col items-center justify-center py-2 rounded-lg bg-white/5 backdrop-blur-sm overflow-hidden transition-all duration-300",
             widthClass
         )}>
             <div className={cn(
-                "font-black tracking-tight flex justify-center w-full",
+                "font-black tracking-tighter flex justify-center items-center w-full",
                 sizeClass,
                 color
             )}>
                 <FlipNumber value={value} color={color} />
             </div>
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-muted-foreground tracking-wider mt-1">
+            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-zinc-500 tracking-wider mt-1 whitespace-nowrap">
                 {label}
             </span>
         </div>

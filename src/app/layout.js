@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { siteConfig } from "@/lib/siteConfig";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,30 +12,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: siteConfig.themeColor,
+};
+
 export const metadata = {
-  title: "Countdowns",
-  description: "Track your important events",
+  title: siteConfig.title,
+  description: siteConfig.description,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: siteConfig.title,
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground transition-colors duration-300`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="min-h-screen flex flex-col">
-            <main className="flex-1 container mx-auto p-4 sm:p-8">
-              {children}
-            </main>
-          </div>
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

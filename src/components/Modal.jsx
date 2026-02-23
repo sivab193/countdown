@@ -30,7 +30,7 @@ export function Modal({ isOpen, onClose, title, children }) {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-card text-card-foreground w-full max-w-md p-6 rounded-2xl shadow-2xl border pointer-events-auto m-4"
+                            className="bg-card text-card-foreground w-full max-w-md p-6 rounded-2xl shadow-[0_25px_60px_-12px_rgba(0,0,0,0.5)] border border-white/10 border-white/10 pointer-events-auto m-4"
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-bold">{title}</h2>

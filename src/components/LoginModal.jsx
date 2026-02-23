@@ -16,7 +16,7 @@ const googleProvider = new GoogleAuthProvider();
 
 function getPasswordCriteria(password) {
     return [
-        { id: "length", label: "At least 8 characters", met: password.length >= 8 },
+        { id: "length", label: "At least 6 characters", met: password.length >= 6 },
         { id: "upper", label: "One uppercase letter", met: /[A-Z]/.test(password) },
         { id: "lower", label: "One lowercase letter", met: /[a-z]/.test(password) },
         { id: "number", label: "One number", met: /\d/.test(password) },
@@ -32,7 +32,7 @@ export function LoginModal({ isOpen, onClose }) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
 
-    const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/;
+    const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{6,}$/;
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -77,7 +77,7 @@ export function LoginModal({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    const inputStyles = "w-full p-2.5 rounded-xl bg-zinc-100 bg-white/5 border border-zinc-200 border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/30 transition-all";
+    const inputStyles = "w-full p-2.5 rounded-xl bg-zinc-100 bg-white/5 border border-zinc-200 border-white/10 text-[#111] dark:text-zinc-100 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/30 transition-all";
 
     return (
         <Modal
@@ -92,9 +92,9 @@ export function LoginModal({ isOpen, onClose }) {
                     onClick={handleGoogleSignIn}
                     disabled={loading}
                     className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-medium text-sm transition-all
-                        bg-white bg-[#2A2A2A] text-zinc-700 text-white
-                        border border-zinc-200 border-white/10
-                        hover:bg-zinc-50 hover:bg-[#333] active:scale-[0.98]"
+                        bg-[#2A2A2A] text-white
+                        border border-zinc-600
+                        hover:bg-[#333] active:scale-[0.98]"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -185,7 +185,7 @@ export function LoginModal({ isOpen, onClose }) {
                     </AnimatePresence>
 
                     {error && (
-                        <p className="text-sm text-emerald-500 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
+                        <p className="text-sm text-red-500 bg-red-500/10 p-2.5 rounded-xl border border-red-500/20">
                             {error}
                         </p>
                     )}
@@ -193,7 +193,7 @@ export function LoginModal({ isOpen, onClose }) {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-2.5 rounded-full font-bold text-sm transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20 flex items-center justify-center"
+                        className="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-full font-bold text-sm transition-all active:scale-[0.98] shadow-lg shadow-red-500/20 flex items-center justify-center"
                     >
                         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (isSignUp ? "Sign Up" : "Sign In")}
                     </button>
@@ -205,7 +205,7 @@ export function LoginModal({ isOpen, onClose }) {
                     </span>
                     <button
                         onClick={() => { setIsSignUp(!isSignUp); setError(""); }}
-                        className="text-emerald-500 hover:text-emerald-400 hover:underline font-semibold transition-colors"
+                        className="text-red-500 hover:text-red-600 hover:underline font-semibold transition-colors"
                     >
                         {isSignUp ? "Sign In" : "Sign Up"}
                     </button>

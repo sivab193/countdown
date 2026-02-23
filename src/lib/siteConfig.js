@@ -9,7 +9,7 @@
  */
 
 export const siteConfig = {
-    title: process.env.NEXT_PUBLIC_SITE_TITLE || "CtDn",
+    title: process.env.NEXT_PUBLIC_SITE_TITLE || "ZeroHour",
     description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || "Track your important events in any timezone with precision.",
     themeColor: "#10b981", // emerald-500
 };

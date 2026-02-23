@@ -71,7 +71,7 @@ export async function GET(request) {
                                 border: '1px solid rgba(255, 255, 255, 0.2)',
                             }}
                         >
-                            <span style={{ fontSize: 24, fontWeight: 'medium' }}>countdowns.app</span>
+                            <span style={{ fontSize: 24, fontWeight: 'medium' }}>zh.siv19.dev</span>
                         </div>
                     </div>
                 </div>

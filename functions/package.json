@@ -1,6 +1,6 @@
 {
     "name": "countdown-functions",
-    "description": "Firebase Cloud Functions for CtDn",
+    "description": "Firebase Cloud Functions for ZeroHour",
     "main": "index.js",
     "engines": {
         "node": "20"

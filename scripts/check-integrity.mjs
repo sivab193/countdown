@@ -202,7 +202,7 @@ async function checkHomepageEvents() {
 
 // Run all checks
 async function main() {
-    console.log("\n🔍 CtDn Data Integrity Check");
+    console.log("\n🔍 ZeroHour Data Integrity Check");
     console.log(`   Mode: ${shouldFix ? "🔧 FIX" : "👀 DRY RUN"}`);
 
     await checkStatsCounters();

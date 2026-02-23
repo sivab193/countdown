@@ -6,16 +6,16 @@ export async function generateMetadata({ params }) {
 
     return {
         title: `@${slug}'s Countdowns`,
-        description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+        description: `Check out ${slug}'s public countdowns on ZeroHour`,
         openGraph: {
             title: `@${slug}'s Countdowns`,
-            description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+            description: `Check out ${slug}'s public countdowns on ZeroHour`,
             images: [`/api/og?title=${encodeURIComponent("Public Profile")}&slug=${encodeURIComponent(slug)}`],
         },
         twitter: {
             card: 'summary_large_image',
             title: `@${slug}'s Countdowns`,
-            description: `Check out ${slug}'s public countdowns on Countdowns.app`,
+            description: `Check out ${slug}'s public countdowns on ZeroHour`,
             images: [`/api/og?title=${encodeURIComponent("Public Profile")}&slug=${encodeURIComponent(slug)}`],
         },
     }

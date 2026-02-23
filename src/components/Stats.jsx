@@ -61,55 +61,44 @@ export function Stats() {
         {
             label: "Registered Users",
             value: loading ? null : users.toLocaleString(),
-            icon: <Users className="w-6 h-6 text-emerald-500" />,
+            icon: <Users className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {
             label: "Public Events Shared",
             value: loading ? null : publicEvents.toLocaleString(),
-            icon: <Globe2 className="w-6 h-6 text-emerald-500" />,
+            icon: <Globe2 className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {
             label: "Total Site Visits",
             value: loading ? null : visits.toLocaleString(),
-            icon: <Eye className="w-6 h-6 text-emerald-500" />,
+            icon: <Eye className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         },
         {
             label: "Public Events per User",
             value: loading ? null : avgEvents,
-            icon: <BarChart3 className="w-6 h-6 text-emerald-500" />,
+            icon: <BarChart3 className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-500" />,
         }
     ];
 
     return (
-        <section className="w-full py-12">
-            <div className="max-w-4xl mx-auto px-4 sm:px-8">
-                <div className="text-center mb-12">
-                    <p className="text-emerald-500 font-medium text-sm mb-4 tracking-wide uppercase flex items-center justify-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        Live Platform Scale
-                    </p>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                        Growing securely every day
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <section className="w-full py-2 lg:py-2 mt-auto shrink-0">
+            <div className="max-w-7xl mx-auto px-1 sm:px-8">
+                <div className="grid grid-cols-4 gap-2 sm:gap-6 lg:flex lg:flex-row lg:justify-around lg:items-center w-full">
                     {stats.map((stat, idx) => (
-                        <div key={idx} className="bg-white/[0.03] rounded-2xl border border-white/5 p-4 sm:p-6 flex flex-col items-center justify-center text-center hover:border-emerald-500/20 hover:shadow-[0_0_20px_-8px_rgba(16,185,129,0.2)] transition-all duration-300">
-                            <div className="bg-emerald-500/10 p-3 sm:p-4 rounded-full mb-3 sm:mb-4">
-                                {stat.icon}
+                        <div key={idx} className="flex flex-col items-center justify-center text-center group">
+                            <div className="flex flex-col lg:flex-row items-center gap-1 sm:gap-2 mb-1">
+                                <div className="p-1 sm:p-2 lg:p-1.5 rounded-full bg-emerald-500/10 text-emerald-500">
+                                    {stat.icon}
+                                </div>
+                                {loading ? (
+                                    <div className="animate-pulse bg-white/10 h-5 sm:h-6 w-12 rounded"></div>
+                                ) : (
+                                    <span className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                                        {stat.value}
+                                    </span>
+                                )}
                             </div>
-                            {loading ? (
-                                <div className="animate-pulse bg-white/10 h-6 sm:h-8 w-16 rounded mx-auto mb-1 sm:mb-2 mt-1"></div>
-                            ) : (
-                                <h4 className="text-xl sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">
-                                    {stat.value}
-                                </h4>
-                            )}
-                            <p className="text-zinc-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+                            <p className="text-zinc-500 text-[8px] sm:text-xs font-bold uppercase tracking-wider leading-tight max-w-[80%] mx-auto lg:max-w-none">
                                 {stat.label}
                             </p>
                         </div>

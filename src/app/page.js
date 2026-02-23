@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Grid } from "@/components/Grid";
 import { CountdownCard } from "@/components/CountdownCard";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,7 +8,7 @@ import { EventModal } from "@/components/EventModal";
 import { ProfileModal } from "@/components/ProfileModal";
 import { LoginModal } from "@/components/LoginModal";
 import { useEvents } from "@/hooks/useEvents";
-import { Plus, LogOut, User } from "lucide-react";
+import { Plus, LogOut, User, ArrowUp } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Features } from "@/components/Features";
@@ -27,6 +27,7 @@ export default function Home() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [filterCategory, setFilterCategory] = useState("All");
   const [showLanding, setShowLanding] = useState(false);
+  const scrollRef = useRef(null);
 
   const CATEGORIES = ["All", "Birthdays", "Movies", "Work", "Vacations", "Anniversaries", "Other"];
 
@@ -46,6 +47,9 @@ export default function Home() {
   }, []);
 
   const { events, addEvent, deleteEvent, updateEvent, loading } = useEvents(user);
+
+  // Dynamic: only show categories that actually exist in events
+  const activeCategories = ["All", ...CATEGORIES.filter(cat => cat !== "All" && events.some(e => (e.category || "Other") === cat))];
 
   const handleAddEvent = () => {
     setEditingEvent(null);
@@ -71,13 +75,7 @@ export default function Home() {
 
   const DashboardContent = (
     <>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h1
-          onClick={() => setShowLanding(true)}
-          className="text-4xl sm:text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-emerald-500 cursor-pointer hover:opacity-80 transition-opacity"
-        >
-          {siteConfig.title}
-        </h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         {user && (
           <button onClick={handleAddEvent} className="p-3 rounded-full bg-emerald-500 text-white hover:scale-110 hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 shrink-0">
             <Plus className="w-6 h-6" />
@@ -86,8 +84,8 @@ export default function Home() {
       </div>
 
       {events.length > 0 && (
-        <div className="flex overflow-x-auto pb-4 mb-8 gap-2 no-scrollbar">
-          {CATEGORIES.map(cat => (
+        <div className="flex overflow-x-auto pb-3 mb-4 gap-2 no-scrollbar">
+          {activeCategories.map(cat => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
@@ -132,24 +130,16 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="-mx-8 -mb-20">
-        <Footer />
-      </div>
     </>
   );
 
   const LandingContent = (
-    <>
-      <section className="h-[100dvh] w-full snap-start flex flex-col pt-24 pb-8 px-4 sm:px-8 relative">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-emerald-500">
-            {siteConfig.title}
-          </h1>
-        </div>
-
+    <div className="flex flex-col justify-between h-full w-full pt-4 pb-20 gap-4 lg:gap-8 overflow-hidden">
+      {/* Hero / Events Section */}
+      <section className="flex flex-col relative w-full flex-1 min-h-0">
         {events.length > 0 && (
-          <div className="flex overflow-x-auto pb-4 mb-4 gap-2 no-scrollbar shrink-0">
-            {CATEGORIES.map(cat => (
+          <div className="flex overflow-x-auto pb-3 mb-4 gap-2 no-scrollbar shrink-0">
+            {activeCategories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setFilterCategory(cat)}
@@ -161,89 +151,91 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex-1 min-h-0 flex flex-col justify-center">
-          <Grid>
+        <div className="flex flex-col justify-center flex-1 min-h-0 w-full">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 w-full pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:overflow-visible no-scrollbar">
             <AnimatePresence mode="popLayout">
               {events
                 .filter(e => filterCategory === "All" || (e.category || "Other") === filterCategory)
                 .map((event) => (
-                  <CountdownCard key={event.id} event={event} onDelete={deleteEvent} onEdit={handleEditEvent} isAdmin={false} />
+                  <div key={event.id} className="w-[85vw] sm:w-[60vw] md:w-auto shrink-0 snap-center">
+                    <CountdownCard event={event} onDelete={deleteEvent} onEdit={handleEditEvent} isAdmin={false} />
+                  </div>
                 ))}
             </AnimatePresence>
-          </Grid>
-        </div>
-
-        <div className="mt-8 text-center shrink-0">
-          <p className="text-xs font-medium text-muted-foreground/50 uppercase tracking-widest animate-pulse">
-            Scroll down to explore
-          </p>
+          </div>
         </div>
       </section>
 
-      <section className="h-[100dvh] w-full snap-start flex flex-col items-center justify-center px-4 sm:px-8 relative">
+      {/* Features Section */}
+      <section className="w-full shrink-0 flex flex-col items-center justify-center relative">
         <Features />
-        <div className="absolute bottom-8 text-center shrink-0">
-          <p className="text-xs font-medium text-muted-foreground/50 uppercase tracking-widest animate-pulse">
-            Scroll down to explore
-          </p>
-        </div>
       </section>
 
-      <section className="h-[100dvh] w-full snap-start flex flex-col justify-between pt-20">
-        <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 w-full max-w-7xl mx-auto">
-          <Stats />
-        </div>
-        <div className="w-full">
-          <Footer />
-        </div>
+      {/* Stats Section */}
+      <section className="w-full shrink-0 flex flex-col items-center justify-center relative">
+        <Stats />
       </section>
-    </>
+    </div>
   );
 
   const showDashboard = user && !showLanding;
 
   return (
-    <div className={cn(
-      "font-[family-name:var(--font-geist-sans)] relative w-full",
-      !showDashboard
-        ? "h-[100dvh] overflow-y-scroll snap-y snap-mandatory scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black"
-        : "min-h-screen p-8 pb-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black"
+    <div ref={scrollRef} className={cn(
+      "font-[family-name:var(--font-geist-sans)] relative w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-black",
+      !showDashboard ? "h-[100dvh] overflow-hidden flex flex-col" : "min-h-[100dvh] pb-24"
     )}>
-      <div className={cn(
-        "z-50 flex items-center gap-4",
-        !showDashboard ? "fixed top-6 right-6 sm:right-8" : "absolute top-6 right-8"
-      )}>
-        {user ? (
-          <div className="flex items-center gap-4">
-            {showLanding && (
-              <button onClick={() => setShowLanding(false)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-all text-sm font-bold shadow-lg shadow-emerald-500/20">
-                Dashboard
-              </button>
-            )}
-            <button onClick={() => setIsProfileModalOpen(true)} className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-colors font-medium border border-foreground/10 px-3 py-1.5 rounded-full hover:bg-foreground/5">
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">My Profile</span>
-            </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors text-sm font-medium">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
+      {/* Solid Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto w-full px-6 sm:px-10 py-3 sm:py-4 flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <h1
+              onClick={() => { if (user) setShowLanding(s => !s); }}
+              className="text-xl sm:text-2xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-emerald-500 cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              {siteConfig.title}
+            </h1>
           </div>
-        ) : (
-          <button onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-all text-sm font-bold shadow-lg shadow-emerald-500/20">
-            <User className="w-4 h-4" />
-            Sign in
-          </button>
-        )}
-      </div>
+          {user ? (
+            <div className="flex items-center gap-4">
+              {showLanding && (
+                <button onClick={() => setShowLanding(false)} className="flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-all text-sm font-bold shadow-lg shadow-emerald-500/20">
+                  Dashboard
+                </button>
+              )}
+              <button onClick={() => setIsProfileModalOpen(true)} className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-colors font-medium border border-foreground/10 px-3 py-1.5 rounded-full hover:bg-foreground/5">
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">My Profile</span>
+              </button>
+              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors text-sm font-medium">
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-all text-sm font-bold shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/20"
+            >
+              <User className="w-4 h-4" />
+              Sign in
+            </button>
+          )}
+        </div>
+      </header>
 
-      <main className={cn("mx-auto w-full max-w-7xl", showDashboard ? "pt-12 px-4 sm:px-8" : "")}>
+      <main className={cn(
+        "mx-auto w-full max-w-7xl px-4 sm:px-8 pt-20",
+        !showDashboard ? "flex flex-col flex-1 min-h-0" : "pb-12"
+      )}>
         {showDashboard ? DashboardContent : LandingContent}
       </main>
 
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       <EventModal isOpen={isEventModalOpen} onClose={() => setIsEventModalOpen(false)} onSave={handleSaveEvent} onDelete={deleteEvent} event={editingEvent} />
       <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} user={user} />
+
+      <Footer />
     </div>
   );
 }

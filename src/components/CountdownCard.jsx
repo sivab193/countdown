@@ -149,16 +149,18 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
-                "relative overflow-hidden rounded-xl p-6 backdrop-blur-md border aspect-square flex flex-col",
+                "relative overflow-hidden rounded-3xl p-4 sm:p-5 lg:p-4 backdrop-blur-xl border border-white/10 shadow-2xl",
+                "h-[220px] sm:h-[280px] lg:h-[230px] w-full flex flex-col justify-between",
                 isEventPast
-                    ? "bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10"
-                    : "bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20",
+                    ? "bg-amber-950/20 hover:bg-amber-900/20 border-amber-500/20"
+                    : "bg-emerald-950/20 hover:bg-emerald-900/20 border-emerald-500/20",
                 "transition-all duration-300 group cursor-pointer",
-                "hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
+                "hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.15)]"
             )}
             onClick={() => isAdmin && onEdit && onEdit(event)}
         >
@@ -181,34 +183,38 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                             ) : (
                                 <span className="h-[20px] w-full block"></span>
                             )}
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white/90 line-clamp-2 leading-tight">
+                            <h3 className="text-2xl font-black tracking-tighter text-white line-clamp-2 leading-tight drop-shadow-sm">
                                 {event.title}
                             </h3>
                         </div>
                         {/* Status Badge — Pill shaped */}
                         <span className={cn(
-                            "shrink-0 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border whitespace-nowrap",
+                            "shrink-0 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border whitespace-nowrap flex items-center justify-center",
                             isEventPast
-                                ? "bg-amber-500/20 text-amber-500 border-amber-500/30"
-                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
+                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                         )}>
                             {isEventPast ? "Past" : "Upcoming"}
                         </span>
                     </div>
 
-                    <div className="text-sm text-zinc-400 font-medium flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="text-sm text-emerald-100/70 font-medium flex flex-wrap items-center gap-x-2 gap-y-1">
                         <ClientDate date={event.date} />
-                        <span className="text-zinc-600">•</span>
+                        <span className="text-emerald-100/40">•</span>
                         <ClientTime date={event.date} timezone={event.timezone} />
                         {event.timezone && (
-                            <span className="text-[10px] uppercase font-bold tracking-wider bg-white/5 px-1.5 py-0.5 rounded text-zinc-500">
+                            <span className="text-[10px] uppercase font-bold tracking-wider bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-100/90">
                                 <ClientTimezone date={new Date()} timezone={event.timezone} />
                             </span>
                         )}
                     </div>
                 </div>
 
-                <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-3 text-center w-full">
+                <div className={cn(
+                    "grid gap-2 sm:gap-3 w-full",
+                    isEventPast ? "opacity-50" : "opacity-100",
+                    format === "months" ? "grid-cols-5" : format === "weeks" ? "grid-cols-5" : format === "days_only" ? "grid-cols-1" : "grid-cols-4"
+                )}>
                     {format === "months" && <TimeUnit value={timeLeft.months} label="Mths" isEventPast={isEventPast} />}
                     {format === "weeks" && <TimeUnit value={timeLeft.weeks} label="Wks" isEventPast={isEventPast} />}
 
@@ -238,21 +244,22 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
 function TimeUnit({ value, label, isEventPast }) {
     const digits = value.toString().length;
 
-    let sizeClass = "text-xl sm:text-2xl";
+    let sizeClass = "text-lg sm:text-xl";
     let widthClass = "px-1 sm:px-2 min-w-0 flex-1";
 
     if (digits >= 4) {
-        sizeClass = "text-base sm:text-lg";
+        sizeClass = "text-sm sm:text-base";
     } else if (digits === 3) {
-        sizeClass = "text-lg sm:text-xl";
+        sizeClass = "text-base sm:text-lg";
     }
 
     const color = isEventPast ? "text-amber-500" : "text-emerald-400";
 
     return (
         <div className={cn(
-            "flex flex-col items-center justify-center py-2 rounded-lg bg-white/5 backdrop-blur-sm overflow-hidden transition-all duration-300",
-            widthClass
+            "flex flex-col items-center justify-center py-1.5 sm:py-2.5 lg:py-1.5 rounded-lg bg-white/5 border border-white/5 backdrop-blur-sm overflow-hidden transition-all duration-300",
+            widthClass,
+            isEventPast ? "opacity-70 grayscale-[0.5]" : ""
         )}>
             <div className={cn(
                 "font-black tracking-tighter flex justify-center items-center w-full",

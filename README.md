@@ -2,8 +2,6 @@
 
 A modern, responsive, and secure web application for tracking important events. Built with **Next.js 16**, **React 19**, and **Firebase**.
 
-![Dashboard Preview](https://placehold.co/800x400?text=Countdowns+Dashboard)
-
 ## About
 
 **Countdowns** is a beautiful, precision-driven progressive web application natively handling complex timezones without breaking a sweat. Seamlessly track when an event is happening anywhere in the world and claim a unique `/u/username` link to share your public moments dynamically over social media with auto-generated OG image cards.

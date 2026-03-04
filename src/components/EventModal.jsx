@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { COMMON_TIMEZONES } from "@/lib/constants";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { FloatingDatePicker } from "@/components/ui/floating-date-picker";
+import { cn } from "@/lib/utils";
 
 const inputStyles = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/30 transition-all";
 const selectStyles = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/30 transition-all appearance-none cursor-pointer";
@@ -18,7 +19,7 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
     const [isPublic, setIsPublic] = useState(false);
     const [category, setCategory] = useState("Other");
 
-    const CATEGORIES = ["Other", "Birthdays", "Movies", "Work", "Vacations", "Anniversaries"];
+    const CATEGORIES = ["Other", "Birthdays", "Movies", "Work", "Vacations", "Anniversaries", "Academic and exam"];
 
     useEffect(() => {
         if (event) {
@@ -102,15 +103,31 @@ export function EventModal({ isOpen, onClose, onSave, onDelete, event }) {
                 </div>
                 <div>
                     <label className="block text-sm font-medium mb-1.5 text-foreground">Category</label>
-                    <select
+                    <input
+                        type="text"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className={selectStyles}
-                    >
+                        className={inputStyles}
+                        placeholder="e.g. Vacation"
+                        maxLength={30}
+                    />
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
                         {CATEGORIES.map((cat) => (
-                            <option key={cat} value={cat}>{cat}</option>
+                            <button
+                                type="button"
+                                key={cat}
+                                onClick={() => setCategory(cat)}
+                                className={cn(
+                                    "text-[10px] px-2.5 py-1.5 rounded-full border transition-colors whitespace-nowrap",
+                                    category === cat
+                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                                        : "bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10 hover:text-white"
+                                )}
+                            >
+                                {cat}
+                            </button>
                         ))}
-                    </select>
+                    </div>
                 </div>
                 <div className="flex items-center gap-3 py-1">
                     <input

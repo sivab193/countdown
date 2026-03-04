@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Globe } from "lucide-react";
 import { format, toZonedTime, fromZonedTime } from "date-fns-tz";
 import { cn } from "@/lib/utils";
 import { FlipNumber } from "./FlipNumber";
@@ -176,13 +177,18 @@ export function CountdownCard({ event, onDelete, onEdit, isAdmin }) {
                 <div className="flex flex-col gap-1 sm:gap-2">
                     <div className="flex items-start justify-between gap-2 min-h-[52px]">
                         <div className="flex flex-col gap-1 w-full pr-2">
-                            {event.category && event.category !== "Other" ? (
-                                <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full w-fit">
-                                    {event.category}
-                                </span>
-                            ) : (
-                                <span className="h-[20px] w-full block"></span>
-                            )}
+                            <div className="flex items-center gap-2 min-h-[20px]">
+                                {event.category && (
+                                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full w-fit max-w-full truncate">
+                                        {event.category}
+                                    </span>
+                                )}
+                                {isAdmin && event.isPublic && (
+                                    <span className="text-[10px] uppercase font-bold tracking-wider text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-full w-fit flex items-center gap-1 shrink-0">
+                                        <Globe className="w-3 h-3" /> Public
+                                    </span>
+                                )}
+                            </div>
                             <h3 className="text-lg sm:text-2xl font-black tracking-tighter text-white break-words whitespace-normal leading-tight drop-shadow-sm">
                                 {event.title}
                             </h3>
